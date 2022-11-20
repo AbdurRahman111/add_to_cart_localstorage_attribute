@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Cart - Our commercer{% endblock %}
+
+{% block body %}
+
+
+<div class="row" style="margin-top:25px; padding:20px;">
+    <div class="col-md-1 col-lg-1"></div>
+    <div class="col-md-6 col-lg-6">
+        <div class="card">
+          <div class="card-body">
+              <h3 class="text-center">Checkout Form</h3>
+                <form method="POST" action="{% url 'checkout' %}">{% csrf_token %}
+                  <div class="form-group">
+                    <label for="full_name">Full Name*</label>
+                    <input type="text" class="form-control" name="full_name" id="full_name" placeholder="Full Name*" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="address_input">Address</label>
+                    <textarea class="form-control" id="address_input" name="address_input" rows="3" required></textarea>
+                  </div>
+                  <input type="hidden" name="cartItems" id="cartItems">
+                  <button class="btn btn-dark" type="submit">Submit</button>
+                </form>
+          </div>
+        </div>
+
+    </div>
+    <div class="col-md-4 col-lg-4">
+        <div class="card" style="width: 100%;">
+            <h3 class="text-center">My Cart(Total : <span id="show_total_price"></span>$)</h3>
+          <div class="card-body" id="cart_prds">
+
+          </div>
+        </div>
+    </div>
+    <div class="col-md-1 col-lg-1"></div>
+</div>
+
+<script>
+
+// call cart info to page
+cart_page_function()
+
+
+
+// cart function to call localstorage data
+function cart_page_function(){
+    var all_cart = "";
+    total_price = 0;
+
+    sub_totals = 0
+
+    product_cart = JSON.parse(localStorage.getItem('product_cart'));
+    for (var item in product_cart){
+        qty = product_cart[item][0];
+        name = product_cart[item][1];
+        price = product_cart[item][2];
+        img = product_cart[item][3];
+        id_prd = product_cart[item][4];
+        cart_uid = product_cart[item][5];
+        color_var = product_cart[item][6];
+        size = product_cart[item][7];
+        embroidery = product_cart[item][8];
+
+
+        sub_totals = parseInt(qty) * parseInt(price)
+
+        total_price = total_price + sub_totals;
+
+        all_cart = all_cart + `<div class="card mb-3" style="max-width: 540px;">
+                  <div class="row no-gutters">
+                    <div class="col-md-2">
+                      <img src="/media/${img}" alt="${name}" style="width:100%; padding-left:5px; padding-top:15px;">
+                    </div>
+                    <div class="col-md-10">
+                      <div class="card-body">
+                        <h5 class="card-title"><a href="/product_details/${id_prd}" style="font-size:18px;">${name}</a></h5>
+                        <p class="card-text"><small class="text-muted">Color : ${color_var}, size: ${size}, embroidery: ${embroidery} <br>price: $${price}, qty:${qty}, subtotal: $${sub_totals}</small></p>
+                      </div>
+                    </div>
+                  </div>
+              </div>`;
+
+
+        };
+
+    document.getElementById('cart_prds').innerHTML = all_cart;
+    document.getElementById('show_total_price').innerHTML = total_price;
+
+    product_cart = JSON.parse(localStorage.getItem('product_cart'));
+
+
+    let all_prds = []
+    for (var item in product_cart){
+            all_prds.push(product_cart[item]);
+        }
+
+    document.getElementById('cartItems').value = JSON.stringify(all_prds)
+
+    //$('#cartItems').val(JSON.stringify(all_prds));
+    }
+
+</script>
+
+{% endblock %}

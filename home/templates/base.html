@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="{% url 'index' %}">Our Commerce</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto"></ul>
+        <div class="form-inline my-2 my-lg-0" style="padding-right:50px;">
+          <a href="{% url 'cart' %}" class="badge badge-warning">
+            <i class="fa fa-shopping-cart" style="font-size:22px"></i>
+            <sup style="font-size:13px" class="badge badge-primary" id="product_cart">0</sup>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <strong>{{ message }}</strong>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if cart_clear %}
+    <script>
+        localStorage.clear();
+      </script>
+    {% endif %}
+
+    {% block body %}{% endblock %}
+
+
+    <!--  make empty cart with localstorage and show update cart info to navbar-->
+    <script>
+        //make empty cart with localstorage
+        if (localStorage.getItem('product_cart')==null){
+            var product_cart={};
+        }
+        else{
+            product_cart = JSON.parse(localStorage.getItem('product_cart'));
+            updateCart(product_cart)
+        }
+
+        //show update cart info to navbar
+        function updateCart(product_cart){
+            var sum = 0;
+            var price_sum = 0;
+            for (var item in product_cart){
+                sum = sum + product_cart[item][0];
+                price_sum = price_sum + product_cart[item][2];
+            }
+            localStorage.setItem('product_cart', JSON.stringify(product_cart))
+            document.getElementById('product_cart').innerHTML = sum;
+
+        }
+    </script>
+
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+  </body>
+</html>
